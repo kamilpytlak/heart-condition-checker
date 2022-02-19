@@ -3,6 +3,7 @@ import pandas as pd
 import polars as pl
 import numpy as np
 import pickle
+import sklearn
 
 DATASET_PATH = "data/heart_2020_cleaned.csv"
 LOG_MODEL_PATH = "model/logistic_regression.pkl"
