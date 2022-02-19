@@ -1,42 +1,56 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import pickle
 
-DATASET_PATH = "data/heart_2020.csv"
-LOG_MODEL_PATH = "models/logistic_regression.pkl"
+DATASET_PATH = "data/heart_2020_cleaned.csv"
+LOG_MODEL_PATH = "model/logistic_regression.pkl"
+
 
 def main():
     @st.cache(persist=True)
-    def load_dataset():
-        heart = pd.read_csv(DATASET_PATH, encoding="UTF-8")
-        return heart
+    def load_dataset() -> pd.DataFrame:
+        heart_df = pd.read_csv(DATASET_PATH, encoding="UTF-8")
+        heart_df = pd.DataFrame(np.sort(heart_df.values, axis=0),
+                                index=heart_df.index,
+                                columns=heart_df.columns)
+        return heart_df
 
-    def user_input_features():
+    def user_input_features() -> pd.DataFrame:
         race = st.sidebar.selectbox("Race", options=(race for race in heart.Race.unique()))
         sex = st.sidebar.selectbox("Sex", options=(sex for sex in heart.Sex.unique()))
-        age_cat = st.sidebar.selectbox("Age Category", options=(age_cat for age_cat in heart.AgeCategory.unique()))
-        bmi = st.sidebar.number_input("BMI", 0.0, 120.0, 20.0)
-        sleep_time = st.sidebar.number_input("Sleep time (in hours)", 0, 24, 8)
-        gen_health = st.sidebar.selectbox("General health",
+        age_cat = st.sidebar.selectbox("Age category",
+                                       options=(age_cat for age_cat in heart.AgeCategory.unique()))
+        bmi_cat = st.sidebar.selectbox("BMI category",
+                                       options=(bmi_cat for bmi_cat in heart.BMICategory.unique()))
+        sleep_time = st.sidebar.number_input("How many hours on average do you sleep?", 0, 24, 7)
+        gen_health = st.sidebar.selectbox("How can you define your general health?",
                                           options=(gen_health for gen_health in heart.GenHealth.unique()))
-        phys_health = st.sidebar.number_input("Good physical health (in days)", 0, 30, 0)
-        ment_health = st.sidebar.number_input("Good mental health (in days)", 0, 30, 0)
-        phys_act = st.sidebar.selectbox("Physical activity in the past month", options=("No", "Yes"))
-        smoking = st.sidebar.selectbox("Smoking (more than 100 cigarettes in a lifetime)",
+        phys_health = st.sidebar.number_input("For how many days during the past 30 days was"
+                                              " your physical health not good?", 0, 30, 0)
+        ment_health = st.sidebar.number_input("For how many days during the past 30 days was"
+                                              " your mental health not good?", 0, 30, 0)
+        phys_act = st.sidebar.selectbox("Have you played any sports (running, biking, etc.)"
+                                        " in the past month?", options=("No", "Yes"))
+        smoking = st.sidebar.selectbox("Have you smoked at least 100 cigarettes in"
+                                       " your entire life (approx. 5 packs)?)",
                                        options=("No", "Yes"))
-        alcohol_drink = st.sidebar.selectbox("Alcohol drinking", options=("No", "Yes"))
-        stroke = st.sidebar.selectbox("Stroke", options=("No", "Yes"))
-        diff_walk = st.sidebar.selectbox("Difficulty in walking", options=("No", "Yes"))
-        diabetic = st.sidebar.selectbox("Diabetic", options=(diabetic for diabetic in heart.Diabetic.unique()))
+        alcohol_drink = st.sidebar.selectbox("Do you have more than 14 drinks of alcohol (men)"
+                                             " or more than 7 (women) in a week?", options=("No", "Yes"))
+        stroke = st.sidebar.selectbox("Did you have a stroke?", options=("No", "Yes"))
+        diff_walk = st.sidebar.selectbox("Do you have serious difficulty walking"
+                                         " or climbing stairs?", options=("No", "Yes"))
+        diabetic = st.sidebar.selectbox("Have you ever had diabetes?",
+                                        options=(diabetic for diabetic in heart.Diabetic.unique()))
         asthma = st.sidebar.selectbox("Do you have asthma?", options=("No", "Yes"))
         kid_dis = st.sidebar.selectbox("Do you have kidney disease?", options=("No", "Yes"))
-        skin_canc = kid_dis = st.sidebar.selectbox("Do you have skin cancer?", options=("No", "Yes"))
+        skin_canc = st.sidebar.selectbox("Do you have skin cancer?", options=("No", "Yes"))
 
         features = pd.DataFrame({
-            "BMI": [bmi],
             "PhysicalHealth": [phys_health],
             "MentalHealth": [ment_health],
             "SleepTime": [sleep_time],
+            "BMICategory": [bmi_cat],
             "Smoking": [smoking],
             "AlcoholDrinking": [alcohol_drink],
             "Stroke": [stroke],
@@ -56,7 +70,7 @@ def main():
 
     st.set_page_config(
         page_title="Heart Disease Prediction App",
-        page_icon="images/heart.png"
+        page_icon="images/heart-fav.png"
     )
 
     st.title("Heart Disease Prediction")
@@ -89,8 +103,10 @@ def main():
         This model would never be adopted by health care facilities because of its less
         than perfect accuracy, so if you have any problems, consult a human doctor.**
         
-        You can see the steps of building the model, evaluating it, and cleaning the data
-        itself on my GitHub repo: 
+        **Author: Kamil Pytlak ([GitHub](https://github.com/kamilpytlak))**
+        
+        You can see the steps of building the model, evaluating it, and cleaning the data itself
+        on my GitHub repo [here](https://github.com/kamilpytlak/data-analyses/tree/main/heart-disease-prediction). 
         """)
 
     heart = load_dataset()
@@ -101,7 +117,7 @@ def main():
     df = pd.concat([input_df, heart], axis=0)
     df = df.drop(columns=["HeartDisease"])
 
-    cat_cols = ["Smoking", "AlcoholDrinking", "Stroke", "DiffWalking",
+    cat_cols = ["BMICategory", "Smoking", "AlcoholDrinking", "Stroke", "DiffWalking",
                 "Sex", "AgeCategory", "Race", "Diabetic", "PhysicalActivity",
                 "GenHealth", "Asthma", "KidneyDisease", "SkinCancer"]
     for cat_col in cat_cols:
@@ -118,16 +134,17 @@ def main():
         prediction = log_model.predict(df)
         prediction_prob = log_model.predict_proba(df)
         if prediction == 0:
-            st.markdown(f"**The probability that you'll have heart disease is {round(prediction_prob[0][1] * 100, 2)}%.\n"
-                        f"You are healthy.**")
+            st.markdown(f"**The probability that you'll have"
+                        f" heart disease is {round(prediction_prob[0][1] * 100, 2)}%."
+                        f" You are healthy!**")
             st.image("images/heart-okay.jpg",
-                     caption="Your heart seems to be okay! - Dr. Logistic Regression",
-                     )
+                     caption="Your heart seems to be okay! - Dr. Logistic Regression")
         else:
-            st.markdown(f"**The probability that you'll have heart disease is {round(prediction_prob[0][1] * 100, 2)}%.\n"
-                        f"You are not healthy.**")
+            st.markdown(f"**The probability that you will have"
+                        f" heart disease is {round(prediction_prob[0][1] * 100, 2)}%."
+                        f" It sounds like you are not healthy.**")
             st.image("images/heart-bad.jpg",
-                     caption="I'm not satisfied with the state of your heart! - Dr. Logistic Regression")
+                     caption="I'm not satisfied with the condition of your heart! - Dr. Logistic Regression")
 
 
 if __name__ == "__main__":
