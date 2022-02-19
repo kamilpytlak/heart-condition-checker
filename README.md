@@ -1,4 +1,4 @@
-# Health Disease Prediction
+# Health Condition Checker
 The app created with Python to predict person's heart health condition based on well-trained machine learning model (logistic regression).
 
 ## Table of Contents
