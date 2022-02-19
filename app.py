@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import polars as pl
 import numpy as np
 import pickle
 
@@ -10,7 +11,8 @@ LOG_MODEL_PATH = "model/logistic_regression.pkl"
 def main():
     @st.cache(persist=True)
     def load_dataset() -> pd.DataFrame:
-        heart_df = pd.read_csv(DATASET_PATH, encoding="UTF-8")
+        heart_df = pl.read_csv(DATASET_PATH)
+        heart_df = heart_df.to_pandas()
         heart_df = pd.DataFrame(np.sort(heart_df.values, axis=0),
                                 index=heart_df.index,
                                 columns=heart_df.columns)
