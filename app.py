@@ -106,7 +106,7 @@ def main():
         This model would never be adopted by health care facilities because of its less
         than perfect accuracy, so if you have any problems, consult a human doctor.**
         
-        **Author: Kamil Pytlak ([GitHub](https://github.com/kamilpytlak))**
+        **Author: Kamil Pytlak ([GitHub](https://github.com/kamilpytlak/heart-condition-checker))**
         
         You can see the steps of building the model, evaluating it, and cleaning the data itself
         on my GitHub repo [here](https://github.com/kamilpytlak/data-analyses/tree/main/heart-disease-prediction). 
