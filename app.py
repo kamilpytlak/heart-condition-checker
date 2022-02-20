@@ -99,7 +99,7 @@ def main():
         (it achieves an accuracy of about 80%, which is quite good).
         
         To predict your heart disease status, simply follow the steps bellow:
-        1. Enter the parameters that best descibe you;
+        1. Enter the parameters that best describe you;
         2. Press the "Predict" button and wait for the result.
             
         **Keep in mind that this results is not equivalent to a medical diagnosis!
@@ -115,6 +115,7 @@ def main():
     heart = load_dataset()
 
     st.sidebar.title("Feature Selection")
+    st.sidebar.image("images/heart-sidebar.png", width=100)
 
     input_df = user_input_features()
     df = pd.concat([input_df, heart], axis=0)
