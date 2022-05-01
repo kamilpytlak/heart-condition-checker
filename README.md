@@ -19,7 +19,7 @@ The logistic regression model was found to be satisfactorily accurate (accuracy 
 The app is fully written in Python 3.9.9. `streamlit 1.5.1` was used to create the user interface, and the machine learning itself was designed using the module `scikit-learn 1.0.2`. `pandas 1.41.`, `numpy 1.22.2` and `polars 0.13.0` were used to perform data converting operations.
 
 ## Installation
-The project was uploaded to the web using heroku. You can use it online at the following link: https://heart-condition-checker.herokuapp.com/. If you want to use this app on your local machine, make sure that you have installed the necessary modules in a version no smaller than the one specified in the `requirements.txt` file. You can either install them globally on your machine or create a virtual environment (`pipenv`), which is highly recommended.
+The project was uploaded to the web using heroku. You can use it online at the following link: https://share.streamlit.io/kamilpytlak/heart-condition-checker/main/app.py. If you want to use this app on your local machine, make sure that you have installed the necessary modules in a version no smaller than the one specified in the `requirements.txt` file. You can either install them globally on your machine or create a virtual environment (`pipenv`), which is highly recommended.
 1.  Install the packages according to the configuration file `requirements.txt`.
 ```
 pip install -r requirements.txt
