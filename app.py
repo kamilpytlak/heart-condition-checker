@@ -19,6 +19,7 @@ def main():
                                 columns=heart_df.columns)
         return heart_df
 
+
     def user_input_features() -> pd.DataFrame:
         race = st.sidebar.selectbox("Race", options=(race for race in heart.Race.unique()))
         sex = st.sidebar.selectbox("Sex", options=(sex for sex in heart.Sex.unique()))
@@ -70,6 +71,7 @@ def main():
         })
 
         return features
+
 
     st.set_page_config(
         page_title="Heart Disease Prediction App",
